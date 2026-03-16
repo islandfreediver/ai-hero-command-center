@@ -1,30 +1,25 @@
-# Project Mission
+# AI Hero Command Center – Mission
 
-Project Name: Bug Arena – Jarvis Command Center
+The goal of this project is to build a **Jarvis-style development command center** that visualizes software activity in real time.
 
-Goal
+The system turns development processes into a living holographic interface.
 
-Upgrade the Bug Arena system into a 3D holographic command center inspired by Tony Stark's Jarvis interface.
+Coding activity becomes drones.
+Errors become bugs.
+Deployments become launch events.
+Projects become orbiting nodes.
 
-The system visualizes development activity across multiple software projects.
+The central AI core behaves like a **thinking neural brain** that reacts to system activity.
 
-AI agents appear as drones moving between project nodes.
+The platform must support:
 
-Bugs appear as enemy entities that agents attack.
+• live monitoring of software projects
+• visual representation of development activity
+• AI agent visualization
+• neural core activity visualization
+• simulation mode when no real activity exists
+• desktop application mode using Electron
 
-Deployments appear as launch events.
+The long-term vision is to create a **software operations room** where multiple projects, tools, and AI assistants can be monitored visually.
 
-The interface must look like a futuristic holographic operations room.
-
-System must run locally in a browser.
-
-Default address:
-http://localhost:3000
-
-Core Requirements
-
-• monitor multiple project folders
-• detect development events
-• display events in a 3D holographic interface
-• animate agents and bugs
-• run without user input once started
+The command center should eventually run as a **Windows desktop executable** without requiring a browser.

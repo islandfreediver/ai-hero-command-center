@@ -1,72 +1,43 @@
 # System Architecture
 
-Backend
+The system consists of three main layers.
 
-Node.js
-Express server
-WebSocket server
+Backend Layer
+Node.js server that monitors development activity.
 
-Event Monitoring
+Responsibilities:
+• filesystem watchers
+• git activity monitoring
+• terminal log monitoring
+• event routing
+• WebSocket event broadcast
 
-Filesystem watcher
-Git watcher
-Terminal log watcher
+Frontend Visualization Layer
+Three.js powered 3D interface rendering a holographic command center.
 
-Event Pipeline
+Components:
+• neural AI core
+• project radar nodes
+• agent drones
+• bug entities
+• particle effects
 
-event source
-→ event router
-→ agent manager
-→ websocket broadcast
-→ client visualization
+Desktop Layer
+Electron wrapper allowing the application to run as a desktop program.
 
-Frontend
+Responsibilities:
+• launch backend automatically
+• render Three.js frontend
+• package Windows executable
 
-Three.js
-WebGL rendering
-Holographic interface
-Drone-style agents
-Bug entities
+Event Flow
 
-Modules
+Filesystem / Git / Terminal events
+→ Event Router
+→ WebSocket broadcast
+→ Visualization Engine
+→ Agents / Bugs / Neural Core update
 
-server/
-watchers/
-eventRouter.js
-agentManager.js
-websocketServer.js
+Project configuration is loaded from:
 
-client/
-hologramEngine.js
-radarMap.js
-agentRenderer.js
-bugRenderer.js
-effects.js
-
-config/
-projects.json
-
-Project Radar
-
-Each monitored project appears as a node in 3D space.
-
-Agent System
-
-Agents move between nodes depending on activity.
-
-Bug System
-
-Errors spawn bug entities.
-
-Agent attacks remove bugs.
-
-Deployment System
-
-Git push events trigger launch animation.
-
-Visualization
-
-Dark background
-Blue holographic glow
-Particle effects
-Energy beams
+config/projects.json
