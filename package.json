@@ -1,0 +1,24 @@
+{
+  "name": "ai-bug-battle-arena",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local real-time dashboard that turns AI development activity into a pixel superhero bug battle arena.",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "simulate:coding": "node scripts/simulateEvent.js coding",
+    "simulate:error": "node scripts/simulateEvent.js error",
+    "simulate:deploy": "node scripts/simulateEvent.js deploy",
+    "simulate:testing": "node scripts/simulateEvent.js testing",
+    "simulate:research": "node scripts/simulateEvent.js research",
+    "arena:relay": "node scripts/relayCommand.js"
+  },
+  "dependencies": {
+    "chokidar": "^4.0.3",
+    "express": "^5.1.0",
+    "ws": "^8.18.3"
+  }
+}

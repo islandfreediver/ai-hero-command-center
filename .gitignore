@@ -1,0 +1,5 @@
+node_modules/
+npm-debug.log*
+.ai-bug-battle-terminal.log
+.arena-server.out.log
+.arena-server.err.log

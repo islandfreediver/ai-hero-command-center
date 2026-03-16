@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ai-bug-battle-arena</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-1: #08161d;
+        --bg-2: #14323a;
+        --panel: rgba(8, 20, 29, 0.88);
+        --panel-border: rgba(126, 248, 225, 0.22);
+        --text: #dffbf2;
+        --muted: #8bb6b0;
+        --hero: #63f6ff;
+        --research: #ffd96c;
+        --testing: #7af596;
+        --bug: #ff7f50;
+        --deploy: #ffbe5c;
+        --danger: #ff5f57;
+        --good: #8fff88;
+        --shadow: rgba(0, 0, 0, 0.35);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--text);
+        font-family: "VT323", monospace;
+        background:
+          radial-gradient(circle at top left, rgba(122, 245, 150, 0.12), transparent 34%),
+          radial-gradient(circle at top right, rgba(255, 217, 108, 0.18), transparent 28%),
+          linear-gradient(145deg, var(--bg-1), var(--bg-2));
+      }
+
+      .app-shell {
+        display: grid;
+        grid-template-columns: minmax(0, 1.8fr) minmax(300px, 360px);
+        gap: 24px;
+        padding: 24px;
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-radius: 18px;
+        box-shadow:
+          0 18px 40px var(--shadow),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+      }
+
+      .arena-panel {
+        padding: 18px;
+      }
+
+      .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        color: var(--muted);
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        font-family: "Press Start 2P", monospace;
+        line-height: 1.45;
+      }
+
+      h1 {
+        font-size: 1rem;
+      }
+
+      h2 {
+        font-size: 0.72rem;
+      }
+
+      .subline {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 1.35rem;
+      }
+
+      .connection-pill {
+        min-width: 108px;
+        padding: 12px 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.05);
+        text-align: center;
+        font-family: "Press Start 2P", monospace;
+        font-size: 0.5rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .connection-pill.online {
+        color: var(--good);
+        border-color: rgba(143, 255, 136, 0.45);
+        box-shadow: 0 0 22px rgba(143, 255, 136, 0.1);
+      }
+
+      .connection-pill.offline {
+        color: #ffb4aa;
+        border-color: rgba(255, 95, 87, 0.4);
+      }
+
+      #arena {
+        width: 100%;
+        display: block;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: #061118;
+        image-rendering: pixelated;
+      }
+
+      .arena-footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 14px;
+        color: var(--muted);
+        font-size: 1.2rem;
+      }
+
+      .sidebar {
+        display: grid;
+        gap: 18px;
+      }
+
+      .sidebar .panel {
+        padding: 18px;
+      }
+
+      .status-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 14px;
+      }
+
+      .status-card {
+        padding: 12px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .status-label {
+        color: var(--muted);
+        font-size: 1.05rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .status-value {
+        margin-top: 6px;
+        font-size: 2rem;
+      }
+
+      .control-copy {
+        margin: 10px 0 0;
+        color: var(--muted);
+        font-size: 1.2rem;
+      }
+
+      .button-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      button {
+        cursor: pointer;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 12px;
+        color: var(--text);
+        font-family: "Press Start 2P", monospace;
+        font-size: 0.55rem;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.12)),
+          rgba(255, 255, 255, 0.05);
+        transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        border-color: rgba(126, 248, 225, 0.38);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+      }
+
+      .feed-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 14px;
+        max-height: 420px;
+        overflow: auto;
+        padding-right: 4px;
+      }
+
+      .feed-item {
+        padding: 12px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .feed-type {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 6px;
+        font-size: 1rem;
+        color: var(--muted);
+        text-transform: uppercase;
+      }
+
+      .feed-message {
+        font-size: 1.2rem;
+        line-height: 1.2;
+      }
+
+      .feed-empty {
+        color: var(--muted);
+        font-size: 1.2rem;
+      }
+
+      code {
+        font-family: "Press Start 2P", monospace;
+        font-size: 0.52rem;
+      }
+
+      @media (max-width: 1080px) {
+        .app-shell {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .app-shell {
+          padding: 14px;
+          gap: 14px;
+        }
+
+        .panel-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .button-grid,
+        .status-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .arena-footer {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <section class="panel arena-panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Live Dev Combat</p>
+            <h1>ai-bug-battle-arena</h1>
+            <p class="subline">Pixel heroes vs. real-time software bugs</p>
+          </div>
+          <div id="connection-pill" class="connection-pill offline">Offline</div>
+        </div>
+        <canvas id="arena" width="960" height="600"></canvas>
+        <div class="arena-footer">
+          <div id="signal-label">Waiting for dev activity...</div>
+          <div>Relay real commands with <code>npm run arena:relay -- npm test</code></div>
+        </div>
+      </section>
+
+      <aside class="sidebar">
+        <section class="panel">
+          <p class="eyebrow">Status Panel</p>
+          <h2>Arena Metrics</h2>
+          <div class="status-grid">
+            <div class="status-card">
+              <div class="status-label">Heroes</div>
+              <div id="hero-count" class="status-value">0</div>
+            </div>
+            <div class="status-card">
+              <div class="status-label">Bugs</div>
+              <div id="bug-count" class="status-value">0</div>
+            </div>
+            <div class="status-card">
+              <div class="status-label">Events</div>
+              <div id="event-count" class="status-value">0</div>
+            </div>
+            <div class="status-card">
+              <div class="status-label">Uptime</div>
+              <div id="uptime" class="status-value">0s</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <p class="eyebrow">Test Mode</p>
+          <h2>Manual Triggers</h2>
+          <p class="control-copy">Use the buttons or the matching npm scripts to spawn activity on demand.</p>
+          <div class="button-grid">
+            <button data-event="coding">Sim Coding</button>
+            <button data-event="research">Sim Research</button>
+            <button data-event="testing">Sim Testing</button>
+            <button data-event="error">Sim Error</button>
+            <button data-event="deploy">Sim Deploy</button>
+            <button data-event="idle">Sim Idle</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <p class="eyebrow">Recent Events</p>
+          <h2>Combat Feed</h2>
+          <div id="feed-list" class="feed-list">
+            <div class="feed-empty">No activity yet. Save a file, run a test, or simulate an event.</div>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

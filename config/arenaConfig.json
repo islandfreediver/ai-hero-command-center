@@ -1,0 +1,71 @@
+{
+  "port": 3000,
+  "arena": {
+    "width": 960,
+    "height": 600,
+    "groundY": 522,
+    "floorPadding": 36,
+    "spawnZones": {
+      "terminalBay": {
+        "xMin": 70,
+        "xMax": 220,
+        "yMin": 400,
+        "yMax": 505
+      },
+      "researchDeck": {
+        "xMin": 275,
+        "xMax": 430,
+        "yMin": 160,
+        "yMax": 320
+      },
+      "testConsole": {
+        "xMin": 460,
+        "xMax": 620,
+        "yMin": 325,
+        "yMax": 480
+      },
+      "serverTower": {
+        "xMin": 655,
+        "xMax": 785,
+        "yMin": 135,
+        "yMax": 320
+      },
+      "launchPad": {
+        "xMin": 805,
+        "xMax": 900,
+        "yMin": 370,
+        "yMax": 505
+      },
+      "enemyField": {
+        "xMin": 240,
+        "xMax": 860,
+        "yMin": 150,
+        "yMax": 500
+      }
+    }
+  },
+  "limits": {
+    "heroes": 18,
+    "enemies": 24,
+    "effects": 160,
+    "recentEvents": 16
+  },
+  "timing": {
+    "tickRate": 30,
+    "broadcastRate": 15,
+    "gitPollMs": 7000,
+    "idleCheckMs": 15000
+  },
+  "watcher": {
+    "ignored": [
+      "**/.git/**",
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/coverage/**",
+      "**/.next/**",
+      "**/.ai-bug-battle-terminal.log",
+      "**/.arena-server.out.log",
+      "**/.arena-server.err.log"
+    ]
+  }
+}
