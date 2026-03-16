@@ -31,19 +31,20 @@ const forwardStream = (stream, writer) => {
     const lines = `${remainder}${text}`.split(/\r?\n/);
     remainder = lines.pop() ?? "";
     if (lines.length > 0) {
-      notifyArena({ lines }).catch(() => {});
+      notifyArena({ lines, cwd: process.cwd() }).catch(() => {});
     }
   });
 
   stream.on("end", () => {
     if (remainder) {
-      notifyArena({ line: remainder }).catch(() => {});
+      notifyArena({ line: remainder, cwd: process.cwd() }).catch(() => {});
     }
   });
 };
 
 await notifyArena({
-  command
+  command,
+  cwd: process.cwd()
 });
 
 const child = spawn(command, {

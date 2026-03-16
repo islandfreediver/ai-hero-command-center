@@ -1,14 +1,17 @@
 # ai-bug-battle-arena
 
-Local real-time dashboard that turns development activity into a pixel superhero battle against software bugs.
+Local real-time Jarvis-style command center for AI development activity.
 
 ## What it does
 
-- Watches file edits with `chokidar` and spawns coding heroes.
-- Monitors git changes and emits repo activity signals.
-- Parses relayed terminal output for tests, deploys, research, and errors.
-- Runs a server-side battle simulation and streams state over WebSocket.
-- Renders a live pixel arena in the browser with heroes, bugs, effects, and an event feed.
+- Loads multiple monitored projects from `config/projects.json`
+- Watches file changes, git activity, and relayed terminal output
+- Streams a project-aware arena state over WebSocket
+- Renders a Three.js holographic command center by default
+- Keeps the original pixel arena available behind a mode toggle
+- Spawns drone agents for coding/testing/research/deploy events
+- Spawns bug entities on errors and boss bugs on repeated failures
+- Supports autonomous simulation mode for local testing
 
 ## Stack
 
@@ -16,42 +19,8 @@ Local real-time dashboard that turns development activity into a pixel superhero
 - Express
 - WebSocket (`ws`)
 - `chokidar`
+- Three.js
 - HTML + Canvas API + ES modules
-
-## Project structure
-
-```text
-ai-bug-battle-arena/
-  assets/
-    sprites/
-  client/
-    arenaRenderer.js
-    effects.js
-    enemyRenderer.js
-    heroRenderer.js
-    index.html
-    main.js
-  config/
-    arenaConfig.json
-  scripts/
-    relayCommand.js
-    simulateEvent.js
-  server/
-    core/
-      agentManager.js
-      battleEngine.js
-      enemyManager.js
-      eventRouter.js
-      utils.js
-    eventCollectors/
-      fileWatcher.js
-      gitWatcher.js
-      terminalWatcher.js
-    websocket/
-      socketServer.js
-    index.js
-  package.json
-```
 
 ## Run
 
@@ -62,7 +31,7 @@ npm start
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Test mode
+## Manual simulation
 
 Start the server first, then use any of these:
 
@@ -74,30 +43,33 @@ npm run simulate:testing
 npm run simulate:research
 ```
 
-You can also click the simulation buttons in the dashboard UI.
+You can also use the dashboard buttons to target individual project nodes.
+
+## Autonomous simulation mode
+
+The dashboard includes Start/Stop controls for the server-side simulation stream.
+
+You can also drive it directly:
+
+```bash
+curl -X POST http://localhost:3000/api/simulation/start
+curl -X POST http://localhost:3000/api/simulation/stop
+curl http://localhost:3000/api/simulation/state
+```
 
 ## Relay real terminal activity
 
-Wrap a local command so the arena can parse its output:
+Wrap a local command so the arena can parse its output and map it to the project path:
 
 ```bash
 npm run arena:relay -- npm test
 npm run arena:relay -- git push
 ```
 
-That sends terminal lines to `/api/terminal`, where the parser maps them into battle events.
-
-## Event mapping
-
-- File modified -> `coding`
-- Git branch or commit change -> `research`
-- Test runner command/output -> `testing`
-- Error output -> `error`
-- Deploy command/output -> `deploy`
-- Quiet period -> `idle`
+That sends terminal lines and the current working directory to `/api/terminal`.
 
 ## Notes
 
-- Sprite assets are procedural right now, so the project runs without external art.
-- Deploy detection is strongest when commands are relayed through `npm run arena:relay -- <command>`.
-- The server is authoritative for simulation state, which keeps the UI simple and deterministic.
+- Missing project paths stay visible as offline radar nodes instead of breaking the server.
+- The WebSocket payload includes `projects`, `core`, `agents`, `bugs`, `effects`, `simulation`, and legacy `heroes` / `enemies` aliases for pixel mode.
+- Three.js is served directly from `node_modules` through the existing Express app, so no bundler is required.

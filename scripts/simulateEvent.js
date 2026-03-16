@@ -1,4 +1,4 @@
-const [eventType = "coding", ...messageParts] = process.argv.slice(2);
+const [eventType = "coding", projectId = "", ...messageParts] = process.argv.slice(2);
 const message = messageParts.join(" ") || `Simulated ${eventType} event.`;
 
 const response = await fetch(`http://localhost:3000/api/simulate/${eventType}`, {
@@ -7,7 +7,8 @@ const response = await fetch(`http://localhost:3000/api/simulate/${eventType}`, 
     "Content-Type": "application/json"
   },
   body: JSON.stringify({
-    message
+    message,
+    projectId: projectId || undefined
   })
 });
 
@@ -18,4 +19,4 @@ if (!response.ok) {
 }
 
 const payload = await response.json();
-console.log(`Sent ${payload.event.type} event to ai-bug-battle-arena.`);
+console.log(`Sent ${payload.events.length} ${eventType} event(s) to ai-bug-battle-arena.`);

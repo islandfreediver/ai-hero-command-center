@@ -44,6 +44,15 @@
       }
     }
   },
+  "world": {
+    "projectRingRadius": 18,
+    "coreHeight": 3.2,
+    "idleOrbitRadius": 8,
+    "launchHeight": 32,
+    "pixelScaleX": 16,
+    "pixelScaleY": 9,
+    "beamHeight": 10
+  },
   "limits": {
     "heroes": 18,
     "enemies": 24,
@@ -55,6 +64,9 @@
     "broadcastRate": 15,
     "gitPollMs": 7000,
     "idleCheckMs": 15000
+  },
+  "simulation": {
+    "intervalMs": 1500
   },
   "watcher": {
     "ignored": [

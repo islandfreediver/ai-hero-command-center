@@ -135,9 +135,10 @@ export class HeroRenderer {
   }
 
   drawHealthBar(context, hero) {
-    const width = hero.size * 1.4;
+    const renderSize = hero.pixelSize ?? hero.size;
+    const width = renderSize * 1.4;
     const left = Math.round(hero.x - width / 2);
-    const top = Math.round(hero.y - hero.size - 10);
+    const top = Math.round(hero.y - renderSize - 10);
     context.fillStyle = "rgba(10, 22, 29, 0.8)";
     context.fillRect(left, top, width, 4);
     context.fillStyle = "#7af596";
@@ -146,7 +147,8 @@ export class HeroRenderer {
 
   draw(context, hero, time) {
     const sprite = this.getSprite(hero.kind);
-    const scale = hero.size / 16;
+    const renderSize = hero.pixelSize ?? hero.size;
+    const scale = renderSize / 16;
     const drawWidth = sprite.width * scale;
     const drawHeight = sprite.height * scale;
     const bounce = hero.state === "move" ? Math.sin(time / 100 + hero.x * 0.05) * 2 : 0;

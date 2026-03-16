@@ -1,12 +1,16 @@
 {
   "projects": [
     {
+      "id": "praatnet",
       "name": "PraatNet",
-      "path": "C:/Projects/praatnet"
+      "path": "C:/Users/User/Documents/praatnet",
+      "color": "#5ed6ff"
     },
     {
-      "name": "Bug Arena",
-      "path": "C:/Projects/bug-arena"
+      "id": "ai-hero-command-center",
+      "name": "AI Hero Command Center",
+      "path": "C:/Projects/ai-hero-command-center",
+      "color": "#78f58e"
     }
   ]
 }

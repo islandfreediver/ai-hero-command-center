@@ -107,9 +107,10 @@ export class EnemyRenderer {
   }
 
   drawHealthBar(context, enemy) {
-    const width = enemy.size * 1.3;
+    const renderSize = enemy.pixelSize ?? enemy.size;
+    const width = renderSize * 1.3;
     const left = Math.round(enemy.x - width / 2);
-    const top = Math.round(enemy.y - enemy.size - 10);
+    const top = Math.round(enemy.y - renderSize - 10);
     context.fillStyle = "rgba(17, 8, 8, 0.8)";
     context.fillRect(left, top, width, 4);
     context.fillStyle = "#ff6f61";
@@ -118,7 +119,8 @@ export class EnemyRenderer {
 
   draw(context, enemy, time) {
     const sprite = this.getSprite(enemy.kind);
-    const scale = enemy.size / 16;
+    const renderSize = enemy.pixelSize ?? enemy.size;
+    const scale = renderSize / 16;
     const floatOffset =
       enemy.kind === "TestFailureGhost" ? Math.sin(time / 120 + enemy.x * 0.04) * 4 : 0;
     const drawWidth = sprite.width * scale;

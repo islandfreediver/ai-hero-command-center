@@ -1,17 +1,23 @@
 import chokidar from "chokidar";
 import path from "node:path";
+import { findProjectForPath } from "../core/projectLoader.js";
 
 export class FileWatcher {
-  constructor({ rootDir, eventRouter, ignored = [] }) {
-    this.rootDir = rootDir;
+  constructor({ projects, defaultProjectId, eventRouter, ignored = [] }) {
+    this.projects = projects;
+    this.defaultProjectId = defaultProjectId;
     this.eventRouter = eventRouter;
     this.ignored = ignored;
     this.watcher = null;
     this.recentSignals = new Map();
   }
 
-  normalizePath(filePath) {
-    return path.relative(this.rootDir, filePath).split(path.sep).join("/");
+  resolveProject(filePath) {
+    return findProjectForPath(filePath, this.projects, this.defaultProjectId);
+  }
+
+  normalizeRelativePath(filePath, projectPath) {
+    return path.relative(projectPath, filePath).split(path.sep).join("/");
   }
 
   isInternalNoise(relativePath) {
@@ -23,12 +29,22 @@ export class FileWatcher {
   }
 
   handleFileEvent(action, filePath) {
-    const relativePath = this.normalizePath(filePath);
-    if (!relativePath || relativePath.startsWith(".git/") || this.isInternalNoise(relativePath)) {
+    const project = this.resolveProject(filePath);
+    if (!project) {
       return;
     }
 
-    const dedupeKey = `${action}:${relativePath}`;
+    const relativePath = this.normalizeRelativePath(filePath, project.path);
+    if (
+      !relativePath ||
+      relativePath.startsWith(".git/") ||
+      this.isInternalNoise(relativePath) ||
+      relativePath.startsWith("node_modules/")
+    ) {
+      return;
+    }
+
+    const dedupeKey = `${project.id}:${action}:${relativePath}`;
     const now = Date.now();
     const lastSeen = this.recentSignals.get(dedupeKey) ?? 0;
     if (now - lastSeen < 450) {
@@ -39,10 +55,14 @@ export class FileWatcher {
     this.eventRouter.route({
       type: "coding",
       source: "fileWatcher",
-      message: `${action} ${relativePath}`,
+      projectId: project.id,
+      projectName: project.name,
+      projectPath: project.path,
+      message: `${project.name}: ${action} ${relativePath}`,
       meta: {
         action,
-        path: relativePath
+        path: relativePath,
+        projectPath: project.path
       }
     });
   }
@@ -52,7 +72,12 @@ export class FileWatcher {
       return;
     }
 
-    this.watcher = chokidar.watch(this.rootDir, {
+    const watchTargets = this.projects.filter((project) => project.exists).map((project) => project.path);
+    if (watchTargets.length === 0) {
+      return;
+    }
+
+    this.watcher = chokidar.watch(watchTargets, {
       ignored: this.ignored,
       ignoreInitial: true,
       persistent: true,

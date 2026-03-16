@@ -25,37 +25,50 @@ export class EffectsRenderer {
 
     switch (effect.kind) {
       case "beam":
+        context.strokeStyle = effect.color ?? "#ffffff";
         context.beginPath();
-        context.moveTo(effect.from.x, effect.from.y);
-        context.lineTo(effect.to.x, effect.to.y);
+        context.moveTo(effect.from2d?.x ?? effect.from?.x ?? effect.x ?? 0, effect.from2d?.y ?? effect.from?.y ?? effect.y ?? 0);
+        context.lineTo(effect.to2d?.x ?? effect.to?.x ?? effect.x ?? 0, effect.to2d?.y ?? effect.to?.y ?? effect.y ?? 0);
         context.stroke();
         break;
       case "scannerWave":
       case "pulse":
       case "spawnRing":
         context.beginPath();
-        context.arc(effect.x, effect.y, (effect.radius ?? 28) * (2 - life), 0, Math.PI * 2);
+        context.arc(
+          effect.x ?? 0,
+          effect.y ?? 0,
+          (effect.pixelRadius ?? effect.radius ?? 28) * (2 - life),
+          0,
+          Math.PI * 2
+        );
         context.stroke();
         break;
       case "smash":
       case "bugSplat":
-        context.fillRect(effect.x - 10, effect.y - 2, 20, 4);
-        context.fillRect(effect.x - 2, effect.y - 10, 4, 20);
+        context.fillRect((effect.x ?? 0) - 10, (effect.y ?? 0) - 2, 20, 4);
+        context.fillRect((effect.x ?? 0) - 2, (effect.y ?? 0) - 10, 4, 20);
         break;
       case "spark":
-        context.fillRect(effect.x - 2, effect.y - 2, 4, 4);
-        context.fillRect(effect.x - 7, effect.y - 1, 4, 2);
-        context.fillRect(effect.x + 3, effect.y - 1, 4, 2);
+        context.fillRect((effect.x ?? 0) - 2, (effect.y ?? 0) - 2, 4, 4);
+        context.fillRect((effect.x ?? 0) - 7, (effect.y ?? 0) - 1, 4, 2);
+        context.fillRect((effect.x ?? 0) + 3, (effect.y ?? 0) - 1, 4, 2);
         break;
       case "explosion":
       case "collapse":
         context.beginPath();
-        context.arc(effect.x, effect.y, effect.radius * (1.35 - life * 0.35), 0, Math.PI * 2);
+        context.arc(
+          effect.x ?? 0,
+          effect.y ?? 0,
+          (effect.pixelRadius ?? effect.radius) * (1.35 - life * 0.35),
+          0,
+          Math.PI * 2
+        );
         context.fill();
         break;
       case "launchTrail":
-        context.fillRect(effect.x - 4, effect.y - 2, 8, 12);
-        context.fillRect(effect.x - 2, effect.y + 10, 4, 8);
+        context.fillRect((effect.x ?? 0) - 4, (effect.y ?? 0) - 2, 8, 12);
+        context.fillRect((effect.x ?? 0) - 2, (effect.y ?? 0) + 10, 4, 8);
         break;
       default:
         break;

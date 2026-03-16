@@ -126,17 +126,59 @@ export class ArenaRenderer {
     context.fillRect(0, arena.groundY + 26, arena.width, 8);
   }
 
+  drawProjectRadar(snapshot) {
+    const context = this.context;
+    const projects = snapshot?.projects ?? [];
+    if (!projects.length) {
+      return;
+    }
+
+    context.save();
+    context.strokeStyle = "rgba(96, 231, 255, 0.18)";
+    context.lineWidth = 1;
+    context.beginPath();
+    context.arc(this.canvas.width / 2, 258, 178, 0, Math.PI * 2);
+    context.stroke();
+
+    context.fillStyle = "rgba(96, 231, 255, 0.28)";
+    context.beginPath();
+    context.arc(this.canvas.width / 2, 258, 16, 0, Math.PI * 2);
+    context.fill();
+
+    for (const project of projects) {
+      const x = this.canvas.width / 2 + project.position.x * 7.2;
+      const y = 258 + project.position.z * 4.2 - project.position.y * 10;
+      context.strokeStyle = project.color;
+      context.beginPath();
+      context.moveTo(this.canvas.width / 2, 258);
+      context.lineTo(x, y);
+      context.stroke();
+
+      context.fillStyle = project.color;
+      context.beginPath();
+      context.arc(x, y, 6 + project.activityLevel * 8, 0, Math.PI * 2);
+      context.fill();
+
+      context.fillStyle = "#dffbf2";
+      context.font = '16px "VT323", monospace';
+      context.fillText(project.name, x + 10, y - 10);
+    }
+
+    context.restore();
+  }
+
   drawHud(status) {
     const context = this.context;
     context.fillStyle = "rgba(5, 12, 16, 0.62)";
-    context.fillRect(18, 18, 226, 74);
+    context.fillRect(18, 18, 252, 92);
     context.strokeStyle = "rgba(255, 255, 255, 0.08)";
-    context.strokeRect(18, 18, 226, 74);
+    context.strokeRect(18, 18, 252, 92);
     context.fillStyle = "#dffbf2";
     context.font = '18px "VT323", monospace';
     context.fillText(`Heroes ${status.heroCount}`, 30, 46);
     context.fillText(`Bugs ${status.bugCount}`, 30, 66);
     context.fillText(`Events ${status.totalEvents}`, 30, 86);
+    context.fillText(`Health ${status.health ?? "stable"}`, 30, 106);
   }
 
   render(snapshot, time) {
@@ -147,6 +189,7 @@ export class ArenaRenderer {
     };
 
     this.drawBackdrop(arena, time);
+    this.drawProjectRadar(snapshot);
     this.drawEnvironment(arena, time);
     this.effectsRenderer.drawBackground(this.context, snapshot?.effects ?? []);
 
@@ -163,7 +206,8 @@ export class ArenaRenderer {
       snapshot?.status ?? {
         heroCount: 0,
         bugCount: 0,
-        totalEvents: 0
+        totalEvents: 0,
+        health: "stable"
       }
     );
   }

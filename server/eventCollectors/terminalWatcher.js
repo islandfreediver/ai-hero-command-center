@@ -1,5 +1,6 @@
 import { open, stat, watch } from "node:fs/promises";
 import { writeFile } from "node:fs/promises";
+import { findProjectForPath } from "../core/projectLoader.js";
 
 const TEST_PATTERN =
   /\b(npm|pnpm|yarn|bun)?\s*(run\s+)?(test|vitest|jest|playwright test|cypress run)\b/i;
@@ -11,8 +12,9 @@ const RESEARCH_PATTERN = /\b(research|searching|analyzing|docs|investigating|pro
 const DEBUG_PATTERN = /\b(debug|fixing|patching|hotfix)\b/i;
 
 export class TerminalWatcher {
-  constructor({ rootDir, eventRouter, logFilePath }) {
-    this.rootDir = rootDir;
+  constructor({ projects, defaultProjectId, eventRouter, logFilePath }) {
+    this.projects = projects;
+    this.defaultProjectId = defaultProjectId;
     this.eventRouter = eventRouter;
     this.logFilePath = logFilePath;
     this.position = 0;
@@ -37,18 +39,40 @@ export class TerminalWatcher {
     return trimmed.length > 100 ? `${prefix}: ${trimmed.slice(0, 97)}...` : `${prefix}: ${trimmed}`;
   }
 
-  ingestLine(line, { source = "terminal" } = {}) {
+  resolveProject({ cwd, projectId } = {}) {
+    if (projectId) {
+      return this.projects.find((project) => project.id === projectId) ?? null;
+    }
+
+    if (cwd) {
+      return findProjectForPath(cwd, this.projects, this.defaultProjectId);
+    }
+
+    return this.projects.find((project) => project.id === this.defaultProjectId) ?? this.projects[0] ?? null;
+  }
+
+  ingestLine(line, options = {}) {
+    const { source = "terminal" } = options;
     const trimmed = line.trim();
     if (!trimmed) {
       return;
     }
 
     const signature = trimmed.toLowerCase();
+    const project = this.resolveProject(options);
+    const projectPayload = project
+      ? {
+          projectId: project.id,
+          projectName: project.name,
+          projectPath: project.path
+        }
+      : {};
 
     if (DEPLOY_PATTERN.test(trimmed) && this.shouldEmit(`deploy:${signature}`)) {
       this.eventRouter.route({
         type: "deploy",
         source,
+        ...projectPayload,
         message: this.buildMessage("Deploy command observed", trimmed),
         meta: {
           line: trimmed
@@ -60,6 +84,7 @@ export class TerminalWatcher {
       this.eventRouter.route({
         type: "testing",
         source,
+        ...projectPayload,
         message: this.buildMessage("Test runner signal", trimmed),
         meta: {
           line: trimmed
@@ -71,6 +96,7 @@ export class TerminalWatcher {
       this.eventRouter.route({
         type: "coding",
         source,
+        ...projectPayload,
         hero: "DebugHero",
         message: this.buildMessage("Debug pass detected", trimmed),
         meta: {
@@ -81,6 +107,7 @@ export class TerminalWatcher {
       this.eventRouter.route({
         type: "research",
         source,
+        ...projectPayload,
         message: this.buildMessage("Research pulse detected", trimmed),
         meta: {
           line: trimmed
@@ -92,6 +119,7 @@ export class TerminalWatcher {
       this.eventRouter.route({
         type: "error",
         source,
+        ...projectPayload,
         message: this.buildMessage("Error detected", trimmed),
         meta: {
           line: trimmed

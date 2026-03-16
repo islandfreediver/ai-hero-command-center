@@ -49,9 +49,10 @@ const inferEnemy = (type, payload) => {
 };
 
 export class EventRouter extends EventEmitter {
-  constructor({ getBugPressure } = {}) {
+  constructor({ getBugPressure, getDefaultProject } = {}) {
     super();
     this.getBugPressure = getBugPressure ?? (() => 0);
+    this.getDefaultProject = getDefaultProject ?? (() => null);
     this.sequence = 0;
   }
 
@@ -60,7 +61,7 @@ export class EventRouter extends EventEmitter {
       return payload.hero;
     }
 
-    if (type === "coding" && this.getBugPressure() > 0) {
+    if (type === "coding" && this.getBugPressure(payload.projectId) > 0) {
       return "DebugHero";
     }
 
@@ -69,11 +70,18 @@ export class EventRouter extends EventEmitter {
 
   route(payload = {}) {
     const type = EVENT_TYPES.includes(payload.type) ? payload.type : "idle";
+    const defaultProject = this.getDefaultProject();
+    const projectId = payload.projectId ?? defaultProject?.id ?? null;
+    const projectName = payload.projectName ?? defaultProject?.name ?? null;
+    const projectPath = payload.projectPath ?? defaultProject?.path ?? null;
     const event = {
       id: `evt-${Date.now()}-${this.sequence += 1}`,
       type,
       source: payload.source ?? "system",
       timestamp: payload.timestamp ?? Date.now(),
+      projectId,
+      projectName,
+      projectPath,
       hero: this.inferHero(type, payload),
       enemy: payload.enemy ?? inferEnemy(type, payload),
       message: payload.message ?? defaultMessage(type, payload.meta),
